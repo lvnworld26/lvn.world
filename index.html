@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LVN WORLD — Streetwear Hype</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- RESET & BASE --- */
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
+        body { background:#050505; color:white; overflow-x:hidden; line-height: 1.6; }
+        
+        body::before {
+            content:""; position:fixed; width:100%; height:100%;
+            background-image:url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity:.08; pointer-events:none; z-index:9999;
+        }
+
+        /* --- LOADER --- */
+        #loader {
+            position:fixed; width:100%; height:100vh; background:#000;
+            display:flex; justify-content:center; align-items:center; z-index:99999;
+            transition: 0.5s;
+        }
+        .loader-logo { font-size:40px; font-weight:800; animation:pulse 1.5s infinite; letter-spacing: 5px; }
+        @keyframes pulse { 0%{opacity:.3} 50%{opacity:1} 100%{opacity:.3} }
+
+        /* --- ANIMATIONS --- */
+        .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+        .delay-1 { transition-delay: 0.2s; }
+        .delay-2 { transition-delay: 0.4s; }
+        .delay-3 { transition-delay: 0.6s; }
+
+        /* --- NAVIGATION --- */
+        header {
+            position:fixed; top:0; width:100%; padding:20px 8%;
+            display:flex; justify-content:space-between; align-items:center;
+            background:rgba(0,0,0,.6); backdrop-filter:blur(10px); z-index:1000;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .logo { font-weight:800; font-size:22px; letter-spacing: 2px; }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height:100vh; display:flex; justify-content:center; align-items:center;
+            text-align:center; background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.9)),
+            url('https://images.unsplash.com/photo-1523398002811-999ca8dec234?q=80&w=1600');
+            background-size:cover; background-position: center;
+        }
+        .hero h1 { font-size:clamp(40px, 8vw, 80px); font-weight:800; margin: 10px 0; }
+        .hero p { opacity:.7; letter-spacing: 4px; text-transform: uppercase; }
+
+        /* --- GLOBAL COMPONENTS --- */
+        section { padding: 100px 8%; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        
+        .section-title {
+            font-size: clamp(24px, 5vw, 32px); font-weight: 800; letter-spacing: 6px;
+            text-transform: uppercase; margin-bottom: 50px; position: relative;
+            text-align: center; width: 100%; display: block;
+        }
+        .section-title::after {
+            content: ''; position: absolute; bottom: -15px; left: 50%;
+            transform: translateX(-50%); width: 60px; height: 3px; background: #ff2e63;
+        }
+
+        .btn {
+            padding:16px 30px; background:#ff2e63; border:none; color:white;
+            border-radius:30px; cursor:pointer; transition:.3s; font-weight: 800;
+            text-transform: uppercase; font-size: 12px; letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(255, 46, 99, 0.2);
+        }
+        .btn:hover:not(:disabled) { 
+            transform:translateY(-4px); 
+            box-shadow: 0 0 25px rgba(255, 46, 99, 0.5);
+            background: #ff4173;
+        }
+        .btn:disabled { background: #222; color: #555; cursor: not-allowed; }
+
+        /* --- PRODUCT CARD --- */
+        .products-grid { display: flex; justify-content: center; width: 100%; }
+        .product { 
+            background:#0f0f0f; border-radius:24px; overflow:hidden; 
+            border: 1px solid #1a1a1a; max-width: 380px; width: 100%;
+            position: relative; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .product:hover { 
+            border-color: #ff2e63; 
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(255, 46, 99, 0.2);
+        }
+        
+        .product-img-container { position: relative; width: 100%; height: 380px; overflow: hidden; }
+        .product img { width:100%; height:100%; object-fit:cover; display:block; transition: 0.5s; }
+        .product:hover img { transform: scale(1.08); }
+
+        .sale-tag {
+            position: absolute; top: 15px; left: 15px; background: #ff2e63;
+            color: white; padding: 5px 12px; font-weight: 800; font-size: 12px;
+            border-radius: 5px; z-index: 10; letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(255, 46, 99, 0.4);
+        }
+
+        .soldout-badge {
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
+            background: #ff2e63; color: white; padding: 10px 25px; font-weight: 900;
+            font-size: 24px; border-radius: 5px; z-index: 10; display: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5); border: 2px solid white;
+        }
+        .is-soldout .soldout-badge { display: block; }
+        .is-soldout { opacity: 0.5; filter: grayscale(1); }
+        
+        .product-info { padding:25px; }
+        .product-info h4 { font-size: 18px; margin-bottom: 8px; font-weight: 600; }
+        
+        .product-price { font-size: 20px; font-weight: 800; color: #ff2e63; margin-bottom: 20px; }
+        .old-price {
+            display: block; font-size: 14px; color: #666;
+            text-decoration: line-through; font-weight: 400; margin-bottom: -5px;
+        }
+
+        .select {
+            width:100%; padding:12px; margin:8px 0; background:#181818;
+            color:white; border:1px solid #252525; border-radius: 12px; outline: none; font-size: 14px;
+        }
+
+        .size-guide-link {
+            font-size: 10px; color: #ff2e63; cursor: pointer; text-decoration: underline;
+            display: block; margin-bottom: 10px; text-align: right; font-weight: 600;
+        }
+        
+        #stock-tag {
+            font-size: 10px; background: #222; padding: 6px 12px; 
+            border-radius: 6px; font-weight: 800;
+        }
+        .low-stock { background: #ff2e63 !important; animation: pulse-red 1.5s infinite; }
+
+        /* --- CONTACT & CARDS --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px;
+            padding: 60px 40px; width: 100%; transition: 0.4s;
+        }
+        .contact-form { display: flex; flex-direction: column; align-items: center; }
+        .contact-form input, .contact-form textarea {
+            width: 100%; padding: 18px 25px; margin: 10px 0;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; border-radius: 15px; outline: none; font-size: 14px; transition: 0.3s;
+        }
+        .contact-form input:focus, .contact-form textarea:focus {
+            border-color: #ff2e63; background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- CART SYSTEM --- */
+        .cart {
+            position:fixed; right:-400px; top:0; width:350px; height:100vh;
+            background:#0a0a0a; padding:30px; transition:.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            overflow:auto; z-index:2000; border-left: 1px solid #222;
+        }
+        .cart.active { right:0; box-shadow: -20px 0 40px rgba(0,0,0,0.8); }
+
+        footer { text-align:center; padding:50px; background:#020202; font-size: 11px; opacity: 0.5; border-top: 1px solid #111; letter-spacing: 2px; }
+        
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: #111; padding: 30px; border-radius: 20px; border: 1px solid #ff2e63; max-width: 500px; width: 100%; text-align: center; }
+        .cart-btn { position:fixed; right:20px; bottom:90px; background:#ff2e63; width:60px; height:60px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:22px; cursor:pointer; z-index: 1500; }
+        .whatsapp { position:fixed; right:20px; bottom:20px; background:#25D366; width:60px; height:60px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:26px; text-decoration:none; color:white; z-index: 1500; }
+
+        @media (max-width: 768px) {
+            section { padding: 80px 5%; }
+            .cart { width: 100%; right: -100%; }
+            .glass-card { padding: 40px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="loader-logo">LVN WORLD</div>
+    </div>
+
+    <header>
+        <div class="logo">LVN WORLD</div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <p class="fade-up delay-1">Est. 2026</p>
+            <h1 class="fade-up delay-2">LVN WORLD</h1>
+            <p class="fade-up delay-2">Streetwear Hype Culture</p>
+            <button class="btn fade-up delay-3" style="margin-top: 30px;" onclick="document.getElementById('shop').scrollIntoView({behavior: 'smooth'})">Shop Now</button>
+        </div>
+    </section>
+
+    <section id="shop">
+        <h2 class="section-title">LIMITED DROP</h2>
+        <div class="products-grid">
+            <div id="main-product" class="product fade-up">
+                <div class="sale-tag">SALE 17% OFF</div>
+                <div class="soldout-badge">SOLD OUT</div>
+                <div class="product-img-container">
+                    <img src="lvnworld.png.png" alt="LVN Tee">
+                </div>
+                <div class="product-info">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                        <div>
+                            <h4>LVN Graphic Tee Black Pink</h4>
+                            <span class="old-price">Rp 180.000</span>
+                            <div class="product-price">Rp 149.999</div>
+                        </div>
+                        <span id="stock-tag">LOADING...</span>
+                    </div>
+                    
+                    <span class="size-guide-link" onclick="toggleModal()">Size Guide?</span>
+                    <select class="select" id="size1">
+                        <option value="S">S - Small</option>
+                        <option value="M">M - Medium</option>
+                        <option value="L">L - Large</option>
+                    </select>
+                    <select class="select" id="color1">
+                        <option value="Black">Color: Black</option>
+                        <option value="White">Color: White</option>
+                    </select>
+                    <button id="add-btn" class="btn" style="width:100%; margin-top: 15px;" onclick="addCart('LVN Graphic Tee Black Pink','size1','color1')">Add to Bag</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2 class="section-title">PULL UP</h2>
+        <div class="glass-card fade-up" style="max-width: 1000px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 50px; align-items: start;">
+            
+            <div style="text-align: left; border-left: 2px solid #ff2e63; padding-left: 30px;">
+                <h3 style="font-size: 28px; font-weight: 800; margin-bottom: 20px; letter-spacing: -1px;">CONNECT WITH <br><span style="color: #ff2e63;">THE CREW</span></h3>
+                
+                <div style="margin-bottom: 40px; font-size: 13px; opacity: 0.7; line-height: 1.8; letter-spacing: 1px;">
+                    <p style="margin-bottom: 15px;">Ada pertanyaan seputar drop terbaru atau kerjasama brand? Hit us up via form atau direct contact di bawah.</p>
+                    
+                    <div style="margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                        <p style="font-weight: 800; color: #ff2e63; margin-bottom: 5px;">INSTAGRAM</p>
+                        <p style="margin-bottom: 15px;">@official_lvnworld</p>
+                        
+                        <p style="font-weight: 800; color: #ff2e63; margin-bottom: 5px;">OPERATIONAL</p>
+                        <p>MON — SAT / 10:00 — 22:00</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 9px; opacity: 0.3; letter-spacing: 3px;">LOC: Kota Tasikmalaya // Jawabarat // Indonesia</p>
+            </div>
+
+            <div class="contact-form">
+                <input id="nama" placeholder="YOUR NAME" type="text" style="text-transform: uppercase; font-weight: 600;">
+                <input id="email" placeholder="EMAIL / INSTAGRAM ID" type="text" style="text-transform: uppercase; font-weight: 600;">
+                <textarea id="pesan" placeholder="WHAT'S ON YOUR MIND?" style="height: 150px; resize: none; text-transform: uppercase; font-weight: 600;"></textarea>
+                <button class="btn" style="width:100%; margin-top: 10px; font-size: 14px;" onclick="kirimContact()">DROP TO WHATSAPP</button>
+            </div>
+        </div>
+    </section>
+
+    <div id="sizeModal" class="modal">
+        <div class="modal-content">
+            <h3 style="letter-spacing: 2px; color: #ff2e63;">SIZE CHART (CM)</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <tr><th style="border: 1px solid #222; padding: 10px;">Size</th><th style="border: 1px solid #222; padding: 10px;">Width</th><th style="border: 1px solid #222; padding: 10px;">Length</th></tr>
+                <tr><td style="border: 1px solid #222; padding: 10px;">S</td><td>48</td><td>68</td></tr>
+                <tr><td style="border: 1px solid #222; padding: 10px;">M</td><td>51</td><td>71</td></tr>
+                <tr><td style="border: 1px solid #222; padding: 10px;">L</td><td>54</td><td>74</td></tr>
+                <tr><td style="border: 1px solid #222; padding: 10px;">XL</td><td>57</td><td>77</td></tr>
+            </table>
+            <button class="btn" style="width: 100%;" onclick="toggleModal()">CLOSE</button>
+        </div>
+    </div>
+
+    <div class="cart" id="cart">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h2 style="letter-spacing: 2px; font-weight: 800;">MY BAG</h2>
+            <span onclick="toggleCart()" style="cursor: pointer; font-size: 28px; opacity: 0.5;">✕</span>
+        </div>
+        <div id="cartItems"></div>
+    </div>
+
+    <div class="cart-btn" onclick="toggleCart()">🛒</div>
+    <a id="floating-wa" class="whatsapp" href="#" target="_blank">💬</a>
+
+    <footer>© 2026 LVN WORLD OFFICIAL. <br>STREETWEAR IDENTITY.</footer>
+
+    <script>
+        let cart = [];
+        const stockAmount = 12; 
+        const productStatus = 'available'; 
+        const daftarNomor = ["6287737687886", "6287765656712"];
+
+        function pilihNomorWA() { return daftarNomor[Math.floor(Math.random() * daftarNomor.length)]; }
+
+        window.onload = () => {
+            const productEl = document.getElementById('main-product');
+            const addBtn = document.getElementById('add-btn');
+            const stockTag = document.getElementById('stock-tag');
+
+            stockTag.innerText = `${stockAmount} PCS LEFT`;
+            if (stockAmount <= 5 && stockAmount > 0) stockTag.classList.add('low-stock');
+
+            if (productStatus === 'soldout' || stockAmount <= 0) {
+                productEl.classList.add('is-soldout');
+                addBtn.disabled = true;
+                addBtn.innerText = "OUT OF STOCK";
+                stockTag.innerText = "SOLD OUT";
+                stockTag.style.background = "#ff2e63";
+            }
+
+            document.getElementById('floating-wa').href = `https://wa.me/${pilihNomorWA()}`;
+
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.querySelectorAll('.hero .fade-up').forEach(el => el.classList.add('visible'));
+                }, 500);
+            }, 1500);
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+        }
+
+        function toggleCart() { document.getElementById('cart').classList.toggle('active'); }
+        function toggleModal() { 
+            const m = document.getElementById('sizeModal');
+            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        function addCart(nama, sizeId, colorId) {
+            let size = document.getElementById(sizeId).value;
+            let color = document.getElementById(colorId).value;
+            cart.push({ nama, size, color });
+            render();
+            document.getElementById('cart').classList.add('active');
+        }
+
+        function render() {
+            let el = document.getElementById('cartItems');
+            el.innerHTML = cart.length === 0 ? "<p style='opacity:0.3; text-align:center; margin-top:100px; font-size:13px;'>Your bag is empty.</p>" : "";
+            
+            cart.forEach((item, index) => {
+                el.innerHTML += `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:#111; padding:20px; border-radius:18px; border: 1px solid #222;">
+                    <div>
+                        <strong style="display:block; font-size:13px;">${item.nama}</strong>
+                        <small style="color:#ff2e63; font-weight:800; text-transform: uppercase; font-size:10px;">${item.size} / ${item.color}</small>
+                    </div>
+                    <button onclick='removeItem(${index})' style='background:none; color:rgba(255,255,255,0.2); border:none; font-size:18px; cursor:pointer;'>✕</button>
+                </div>`;
+            });
+
+            if(cart.length > 0) {
+                el.innerHTML += `
+                <div style="margin-top: 30px; border-top: 1px solid #222; padding-top: 20px;">
+                    <label style="font-size: 10px; font-weight: 800; letter-spacing: 1px; color: #666; margin-bottom: 8px; display: block;">SELECT ADMIN</label>
+                    <select class="select" id="pilihAdminCheckout" style="margin-bottom: 15px;">
+                        <option value="0">ADMIN 1 (FAST RESPOND)</option>
+                        <option value="1">ADMIN 2 (ORDER HELPER)</option>
+                    </select>
+                    <button class="btn" style="width:100%;" onclick="kirimKeAdmin()">CHECKOUT VIA WA</button>
+                </div>`;
+            }
+        }
+
+        function removeItem(index) { cart.splice(index, 1); render(); }
+
+        function kirimKeAdmin() {
+            let adminIndex = document.getElementById('pilihAdminCheckout').value;
+            let nomorTujuan = daftarNomor[adminIndex];
+            
+            let daftar = cart.map((item, i) => 
+                `${i+1}. ${item.nama} (${item.size} - ${item.color}) - *Rp 149.999*`
+            ).join('%0A');
+            
+            let text = `Halo LVN WORLD, saya mau order produk SALE:%0A%0A${daftar}%0A%0A*Total Order:* ${cart.length} Item`;
+            
+            window.open(`https://wa.me/${nomorTujuan}?text=${text}`, '_blank');
+        }
+
+        function kirimContact() {
+            let nama = document.getElementById('nama').value;
+            let email = document.getElementById('email').value;
+            let pesan = document.getElementById('pesan').value;
+            if(!nama || !pesan) return alert("Mohon isi nama dan pesan.");
+            
+            let text = `*CONTACT FROM WEBSITE*%0A--------------------------%0A*Nama:* ${nama}%0A*Email:* ${email || '-'}%0A*Pesan:* ${pesan}`;
+            window.open(`https://wa.me/${pilihNomorWA()}?text=${text}`, '_blank');
+        }
+    </script>
+</body>
+</html>
