@@ -1,400 +1,570 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LVN WORLD — Streetwear Hype</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>LVN WORLD — Light Vision Night</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* --- RESET & BASE --- */
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
-        body { background:#050505; color:white; overflow-x:hidden; line-height: 1.6; }
-        
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background:#050505; color:white; overflow-x:hidden; scroll-behavior: smooth; cursor: none; } 
+
+        /* CUSTOM CURSOR */
+        #cursor { width: 20px; height: 20px; border: 2px solid #ff2e63; border-radius: 50%; position: fixed; pointer-events: none; z-index: 99999; transition: transform 0.1s ease; transform: translate(-50%, -50%); }
+        #cursor.hovered { transform: translate(-50%, -50%) scale(2); background: rgba(255, 46, 99, 0.1); border-color: #ff2e63; }
+        @media (max-width: 768px) { #cursor { display: none; } body { cursor: auto; } }
+
+        ::selection { background: #ff2e63; color: white; }
+
         body::before {
             content:""; position:fixed; width:100%; height:100%;
             background-image:url('https://grainy-gradients.vercel.app/noise.svg');
             opacity:.08; pointer-events:none; z-index:9999;
         }
 
-        /* --- LOADER --- */
         #loader {
             position:fixed; width:100%; height:100vh; background:#000;
             display:flex; justify-content:center; align-items:center; z-index:99999;
-            transition: 0.5s;
         }
-        .loader-logo { font-size:40px; font-weight:800; animation:pulse 1.5s infinite; letter-spacing: 5px; }
+        .loader-logo { font-size:40px; font-weight:800; animation:pulse 1.5s infinite; letter-spacing: 5px; color: #ff2e63; }
         @keyframes pulse { 0%{opacity:.3} 50%{opacity:1} 100%{opacity:.3} }
 
-        /* --- ANIMATIONS --- */
-        .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
-        .fade-up.visible { opacity: 1; transform: translateY(0); }
-        .delay-1 { transition-delay: 0.2s; }
-        .delay-2 { transition-delay: 0.4s; }
-        .delay-3 { transition-delay: 0.6s; }
+        .reveal { opacity: 0; transform: scale(0.9) translateY(40px); transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .reveal.visible { opacity: 1; transform: scale(1) translateY(0); }
 
-        /* --- NAVIGATION --- */
         header {
-            position:fixed; top:0; width:100%; padding:20px 8%;
+            position:fixed; top:31px; width:100%; padding:20px 8%;
             display:flex; justify-content:space-between; align-items:center;
-            background:rgba(0,0,0,.6); backdrop-filter:blur(10px); z-index:1000;
+            background:rgba(0,0,0,.8); backdrop-filter:blur(15px); z-index:1000;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .logo { font-weight:800; font-size:22px; letter-spacing: 2px; }
+        @media (max-width: 768px) { header { top: 31px; } }
+        
+        /* LOGO GLITCH EFFECT */
+        .logo { font-weight:800; font-size:22px; letter-spacing: 4px; color: #ff2e63; position: relative; transition: 0.3s; }
+        .logo:hover { animation: glitch 0.3s linear infinite; color: #fff; text-shadow: 2px 0 #ff2e63, -2px 0 #00f3ff; }
+        
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
+        
+        .header-meta { display: flex; gap: 12px; align-items: center; }
+        .header-social-link { color:white; text-decoration:none; font-size:10px; letter-spacing:1px; opacity:0.6; transition: 0.3s; font-weight: 600; }
+        .header-social-link:hover { opacity: 1; color: #ff2e63; }
 
-        /* --- HERO SECTION --- */
         .hero {
             height:100vh; display:flex; justify-content:center; align-items:center;
-            text-align:center; background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.9)),
-            url('https://images.unsplash.com/photo-1523398002811-999ca8dec234?q=80&w=1600');
+            text-align:center; background:linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.9)),
+            url('1778855148781.jpg');
             background-size:cover; background-position: center;
         }
-        .hero h1 { font-size:clamp(40px, 8vw, 80px); font-weight:800; margin: 10px 0; }
-        .hero p { opacity:.7; letter-spacing: 4px; text-transform: uppercase; }
 
-        /* --- GLOBAL COMPONENTS --- */
-        section { padding: 100px 8%; width: 100%; display: flex; flex-direction: column; align-items: center; }
-        
-        .section-title {
-            font-size: clamp(24px, 5vw, 32px); font-weight: 800; letter-spacing: 6px;
-            text-transform: uppercase; margin-bottom: 50px; position: relative;
-            text-align: center; width: 100%; display: block;
-        }
-        .section-title::after {
-            content: ''; position: absolute; bottom: -15px; left: 50%;
-            transform: translateX(-50%); width: 60px; height: 3px; background: #ff2e63;
-        }
+        .about-section { padding: 120px 8% 40px 8%; text-align: center; }
+        .about-text { font-size: clamp(18px, 4vw, 30px); font-weight: 300; font-style: italic; line-height: 1.6; opacity: 0.8; letter-spacing: 2px; }
+
+        .story-section { padding: 80px 8%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 60px; align-items: center; background: #080808; border-top: 1px solid #111; border-bottom: 1px solid #111; }
+        .story-img { width: 100%; height: 450px; border: 1px solid #1a1a1a; overflow: hidden; }
+        .story-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.2); }
+        .story-content h2 { font-size: 32px; font-weight: 800; letter-spacing: 5px; color: #ff2e63; margin-bottom: 25px; }
+        .story-content p { font-size: 14px; line-height: 1.8; opacity: 0.6; margin-bottom: 20px; letter-spacing: 1px; }
 
         .btn {
-            padding:16px 30px; background:#ff2e63; border:none; color:white;
-            border-radius:30px; cursor:pointer; transition:.3s; font-weight: 800;
-            text-transform: uppercase; font-size: 12px; letter-spacing: 1px;
-            box-shadow: 0 0 15px rgba(255, 46, 99, 0.2);
+            padding:16px 35px; background:#ff2e63; border: 1px solid #ff2e63; color:white;
+            border-radius:2px; cursor:pointer; font-weight: 800;
+            text-transform: uppercase; font-size: 11px; letter-spacing: 2px;
+            position: relative; overflow: hidden; z-index: 1;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        .btn:hover:not(:disabled) { 
-            transform:translateY(-4px); 
-            box-shadow: 0 0 25px rgba(255, 46, 99, 0.5);
-            background: #ff4173;
-        }
-        .btn:disabled { background: #222; color: #555; cursor: not-allowed; }
+        .btn:hover { background: transparent; color: #ff2e63; border-color: #ff2e63; transform: translateY(-3px); box-shadow: 0 0 15px rgba(255, 46, 99, 0.4); }
+        .btn:disabled { background: #222; color: #555; border-color: #222; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        /* --- PRODUCT CARD --- */
-        .products-grid { display: flex; justify-content: center; width: 100%; }
-        .product { 
-            background:#0f0f0f; border-radius:24px; overflow:hidden; 
-            border: 1px solid #1a1a1a; max-width: 380px; width: 100%;
-            position: relative; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .product:hover { 
-            border-color: #ff2e63; 
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(255, 46, 99, 0.2);
-        }
+        section { padding:100px 8%; }
         
-        .product-img-container { position: relative; width: 100%; height: 380px; overflow: hidden; }
-        .product img { width:100%; height:100%; object-fit:cover; display:block; transition: 0.5s; }
-        .product:hover img { transform: scale(1.08); }
+        /* SHOP DISPLAY FLEX FOR MULTIPLE ITEMS */
+        .shop-container { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; align-items: flex-start; }
 
-        .sale-tag {
-            position: absolute; top: 15px; left: 15px; background: #ff2e63;
-            color: white; padding: 5px 12px; font-weight: 800; font-size: 12px;
-            border-radius: 5px; z-index: 10; letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(255, 46, 99, 0.4);
-        }
-
-        .soldout-badge {
-            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
-            background: #ff2e63; color: white; padding: 10px 25px; font-weight: 900;
-            font-size: 24px; border-radius: 5px; z-index: 10; display: none;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5); border: 2px solid white;
-        }
-        .is-soldout .soldout-badge { display: block; }
-        .is-soldout { opacity: 0.5; filter: grayscale(1); }
+        .product { background:#0a0a0a; border: 1px solid #1a1a1a; width: 100%; max-width: 450px; overflow: hidden; }
         
-        .product-info { padding:25px; }
-        .product-info h4 { font-size: 18px; margin-bottom: 8px; font-weight: 600; }
-        
-        .product-price { font-size: 20px; font-weight: 800; color: #ff2e63; margin-bottom: 20px; }
-        .old-price {
-            display: block; font-size: 14px; color: #666;
-            text-decoration: line-through; font-weight: 400; margin-bottom: -5px;
+        /* PREMIUM IMAGE HOVER ENGINE & OVERFLOW HIDDEN */
+        .img-container { 
+            width: 100%; 
+            position: relative; 
+            background: #fff; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            aspect-ratio: 1/1;
+        }
+        .product .parallax-img { 
+            width: 100%; 
+            height: auto; 
+            display: block;
+            filter: grayscale(30%); 
+            transition: filter 1s ease, transform 1s cubic-bezier(0.25, 1, 0.5, 1); 
+        }
+        /* Zoom & Color Reveal */
+        .product:hover .parallax-img { filter: grayscale(0%); transform: scale(1.08); }
+        .product-info { padding:30px; position: relative; z-index: 2; background: #0a0a0a; border-top: 1px solid #1a1a1a; }
+
+        /* HYPER GENERATOR / SOLD OUT PLACEHOLDER DESIGN */
+        .product.sold-out { opacity: 0.4; filter: grayscale(100%); transition: 0.3s; }
+        .product.sold-out:hover { opacity: 0.6; }
+        .sold-out-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-10deg); background: #000; border: 2px solid #ff2e63; color: #ff2e63; font-weight: 800; font-size: 14px; padding: 10px 20px; letter-spacing: 4px; z-index: 5; box-shadow: 0 0 15px rgba(255,46,99,0.5); }
+
+        .shipping-info { margin-top: 25px; font-size: 9px; opacity: 0.4; letter-spacing: 1px; line-height: 2; border-top: 1px dashed #222; padding-top: 15px; }
+        .inventory-counter { font-size: 10px; color: #ff2e63; font-weight: 800; margin-bottom: 15px; letter-spacing: 1px; }
+
+        .tech-specs { display: flex; gap: 15px; margin: 25px 0; border-top: 1px solid #1a1a1a; padding-top: 20px; }
+        .spec-item { text-align: center; flex: 1; }
+        .spec-icon { font-size: 16px; margin-bottom: 5px; display: block; filter: grayscale(1); }
+        .spec-text { font-size: 8px; letter-spacing: 1px; opacity: 0.5; font-weight: 800; text-transform: uppercase; }
+
+        .care-box { background: #000; border: 1px dashed #333; padding: 15px; margin: 20px 0; font-size: 10px; line-height: 1.6; opacity: 0.7; }
+        .care-box span { color: #ff2e63; font-weight: 800; display: block; margin-bottom: 5px; }
+
+        .lookbook-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 50px; }
+        .lookbook-item { aspect-ratio: 4/5; background: #111; overflow: hidden; border: 1px solid #1a1a1a; }
+        .lookbook-item img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: 0.8s; }
+        .lookbook-item:hover img { filter: grayscale(0); transform: scale(1.05); }
+
+        .select, .input-field {
+            width:100%; padding:15px; margin:10px 0; background:#000;
+            color:white; border:1px solid #333; outline: none; font-weight: 600; font-size: 12px;
+            transition: 0.3s;
         }
 
-        .select {
-            width:100%; padding:12px; margin:8px 0; background:#181818;
-            color:white; border:1px solid #252525; border-radius: 12px; outline: none; font-size: 14px;
-        }
+        .copy-box { background: #111; padding: 15px; margin: 10px 0; border: 1px solid #222; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
+        .copy-btn { color: #ff2e63; font-weight: 800; cursor: pointer; text-decoration: underline; font-size: 10px; }
 
-        .size-guide-link {
-            font-size: 10px; color: #ff2e63; cursor: pointer; text-decoration: underline;
-            display: block; margin-bottom: 10px; text-align: right; font-weight: 600;
-        }
-        
-        #stock-tag {
-            font-size: 10px; background: #222; padding: 6px 12px; 
-            border-radius: 6px; font-weight: 800;
-        }
-        .low-stock { background: #ff2e63 !important; animation: pulse-red 1.5s infinite; }
-
-        /* --- CONTACT & CARDS --- */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px;
-            padding: 60px 40px; width: 100%; transition: 0.4s;
-        }
-        .contact-form { display: flex; flex-direction: column; align-items: center; }
-        .contact-form input, .contact-form textarea {
-            width: 100%; padding: 18px 25px; margin: 10px 0;
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white; border-radius: 15px; outline: none; font-size: 14px; transition: 0.3s;
-        }
-        .contact-form input:focus, .contact-form textarea:focus {
-            border-color: #ff2e63; background: rgba(255, 255, 255, 0.05);
-        }
-
-        /* --- CART SYSTEM --- */
         .cart {
             position:fixed; right:-400px; top:0; width:350px; height:100vh;
-            background:#0a0a0a; padding:30px; transition:.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            overflow:auto; z-index:2000; border-left: 1px solid #222;
+            background:#0a0a0a; padding:30px; transition:.4s cubic-bezier(0.4, 0, 0.2, 1); z-index:2000; border-left: 1px solid #222;
+            overflow-y: auto;
         }
-        .cart.active { right:0; box-shadow: -20px 0 40px rgba(0,0,0,0.8); }
+        .cart.active { right:0; }
 
-        footer { text-align:center; padding:50px; background:#020202; font-size: 11px; opacity: 0.5; border-top: 1px solid #111; letter-spacing: 2px; }
-        
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: #111; padding: 30px; border-radius: 20px; border: 1px solid #ff2e63; max-width: 500px; width: 100%; text-align: center; }
-        .cart-btn { position:fixed; right:20px; bottom:90px; background:#ff2e63; width:60px; height:60px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:22px; cursor:pointer; z-index: 1500; }
-        .whatsapp { position:fixed; right:20px; bottom:20px; background:#25D366; width:60px; height:60px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:26px; text-decoration:none; color:white; z-index: 1500; }
+        #sizeModal { display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.95); justify-content:center; align-items:center; }
+        .modal-content { background:#111; padding:40px; width:90%; max-width:500px; border: 1px solid #333; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; color: white; }
+        table th { background: #ff2e63; padding: 12px; font-size: 12px; }
+        table td { border: 1px solid #222; padding: 12px; text-align: center; font-size: 13px; }
 
-        @media (max-width: 768px) {
-            section { padding: 80px 5%; }
-            .cart { width: 100%; right: -100%; }
-            .glass-card { padding: 40px 20px; }
+        .floating-icon {
+            position:fixed; right:20px; width:60px; height:60px; border-radius:50%; 
+            display:flex; justify-content:center; align-items:center; z-index:1500; cursor:pointer;
         }
+
+        .community-section { background: #000; border-top: 1px solid #111; padding: 100px 8%; text-align: center; }
+        .community-container { max-width: 600px; margin: 0 auto; }
+        .community-container h3 { font-size: 24px; font-weight: 800; letter-spacing: 6px; color: #ff2e63; margin-bottom: 20px; }
+        .community-container p { font-size: 13px; line-height: 1.8; opacity: 0.6; margin-bottom: 40px; letter-spacing: 1px; }
+        .btn-community { background: transparent; border: 2px solid #ff2e63; color: #ff2e63; }
+        .btn-community:hover { background: #ff2e63; color: #fff; }
+
+        .top-banner { background: #ff2e63; color: #fff; font-size: 10px; font-weight: 800; letter-spacing: 2px; padding: 8px 0; overflow: hidden; position: fixed; top: 0; width: 100%; z-index: 1001; }
+        .marquee-text { display: flex; width: max-content; animation: marquee 25s linear infinite; }
+        .marquee-text span { padding-right: 50px; }
+        @keyframes marquee { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
+
+        /* ATMOSPHERIC AUDIO PLAYER BUTTON */
+        .audio-player-container { position: fixed; bottom: 20px; left: 20px; z-index: 1500; display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.6); padding: 10px 15px; border: 1px solid #222; backdrop-filter: blur(5px); border-radius: 30px; }
+        .audio-btn { background: none; border: none; color: #ff2e63; font-size: 14px; cursor: pointer; outline: none; font-weight: 800; display: flex; align-items: center; gap: 8px; letter-spacing: 1px; }
+        .audio-waves { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+        .wave-bar { width: 2px; height: 3px; background: #ff2e63; animation: bounce 0.5s ease infinite alternate; animation-play-state: paused; }
+        .audio-waves.playing .wave-bar { animation-play-state: running; }
+        .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes bounce { 0% { height: 3px; } 100% { height: 12px; } }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="loader-logo">LVN WORLD</div>
+    <div class="top-banner">
+        <div class="marquee-text">
+            <span>LVN WORLD — DROP 01: MIDNIGHT WANDERERS AVAILABLE NOW • FREE STICKER PACK FOR EVERY ORDER • </span>
+            <span>LVN WORLD — DROP 01: MIDNIGHT WANDERERS AVAILABLE NOW • FREE STICKER PACK FOR EVERY ORDER • </span>
+        </div>
     </div>
 
+    <div id="cursor"></div>
+    <div id="loader"><div class="loader-logo">LVN WORLD</div></div>
+
     <header>
-        <div class="logo">LVN WORLD</div>
+        <div class="logo">LVN</div>
+        <div class="header-meta">
+            <a href="https://instagram.com/official_lvnworld" class="header-social-link" target="_blank">IG</a>
+            <div style="width: 1px; height: 10px; background: rgba(255,255,255,0.2);"></div>
+            <a href="https://tiktok.com/@lvn.world" class="header-social-link" target="_blank">TT</a>
+            <div style="width: 1px; height: 10px; background: rgba(255,255,255,0.2);"></div>
+            <div id="store-status" style="font-size: 10px; letter-spacing: 2px; color: #ff2e63; font-weight: 800;">CHECKING...</div>
+        </div>
     </header>
 
     <section class="hero">
-        <div class="container">
-            <p class="fade-up delay-1">Est. 2026</p>
-            <h1 class="fade-up delay-2">LVN WORLD</h1>
-            <p class="fade-up delay-2">Streetwear Hype Culture</p>
-            <button class="btn fade-up delay-3" style="margin-top: 30px;" onclick="document.getElementById('shop').scrollIntoView({behavior: 'smooth'})">Shop Now</button>
+        <div class="reveal">
+            <h1 style="font-size: clamp(40px, 8vw, 70px); letter-spacing: -2px;">LIGHT VISION NIGHT</h1>
+            <div id="timer" style="font-size: 14px; letter-spacing: 5px; color: #ff2e63; margin: 20px 0; font-weight: 800;">00:00:00</div>
+            <p style="letter-spacing: 10px; opacity: 0.5; margin-top: 10px;">EST. 2026</p>
+            <button class="btn" id="hero-btn" style="margin-top: 40px;" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">Explore</button>
+        </div>
+    </section>
+
+    <div class="about-section reveal" id="about">
+        <p class="about-text">
+            "LIGHT VISION NIGHT — A study of shadows and urban light.<br>
+            Designed for the midnight wanderers."
+        </p>
+    </div>
+
+    <section class="story-section reveal">
+        <div class="story-img"><img src="1778855148781.jpg" alt="LVN Identity"></div>
+        <div class="story-content">
+            <h2>OUR STORY</h2>
+            <p>LVN WORLD (Light Vision Night) was never born in a corporate room. It was sparked from a cold coffee cup at Cafe Wey, Tasikmalaya. Under the dim city lights and midnight breeze, a 17-year-old visionary decided to stop dreaming and start a movement.</p>
+            <p>While the world sleeps, the midnight wanderers awake. For us, the night is a blank canvas where raw urban aesthetics and visual distortions take over. LVN is a dedicated space for those who stay up, create, and redefine the rules in the dark.</p>
+            <p>From Tasikmalaya to the global scene, we don't just manufacture garments. Every heavyweight Cotton Combed 20s fabric and precise plastisol ink we select is a testament to youth ambition—proving that vision has no age limits.</p>
         </div>
     </section>
 
     <section id="shop">
-        <h2 class="section-title">LIMITED DROP</h2>
-        <div class="products-grid">
-            <div id="main-product" class="product fade-up">
-                <div class="sale-tag">SALE 17% OFF</div>
-                <div class="soldout-badge">SOLD OUT</div>
-                <div class="product-img-container">
-                    <img src="lvnworld.png.png" alt="LVN Tee">
+        <div class="shop-container">
+            
+            <div class="product reveal">
+                <div class="img-container">
+                    <img src="WhatsApp Image 2026-05-16 at 08.35.13.jpeg" class="parallax-img" alt="Graphic Tee">
                 </div>
                 <div class="product-info">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-                        <div>
-                            <h4>LVN Graphic Tee Black Pink</h4>
-                            <span class="old-price">Rp 180.000</span>
-                            <div class="product-price">Rp 149.999</div>
-                        </div>
-                        <span id="stock-tag">LOADING...</span>
+                    <div class="inventory-counter">🔥 <span id="viewing-count">12</span> PEOPLE ARE VIEWING THIS ITEM</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h2 style="font-size: 18px; letter-spacing: 2px;">LVN GRAPHIC TEE</h2>
+                        <span style="font-size: 10px; background:#ff2e63; padding:4px 8px; font-weight:800;">SALE</span>
                     </div>
-                    
-                    <span class="size-guide-link" onclick="toggleModal()">Size Guide?</span>
+                    <div style="margin-bottom: 20px;">
+                        <span style="text-decoration: line-through; opacity: 0.3; font-size: 14px; margin-right: 10px;">IDR 180.000</span>
+                        <span style="font-size: 24px; font-weight: 800; color: #ff2e63;">IDR 135.000</span>
+                    </div>
+                    <div class="tech-specs">
+                        <div class="spec-item"><span class="spec-icon">⚖️</span><span class="spec-text">heavyweight Cotton Combed 20s</span></div>
+                        <div class="spec-item"><span class="spec-icon">🛡️</span><span class="spec-text">Plastisol</span></div>
+                        <div class="spec-item"><span class="spec-icon">👕</span><span class="spec-text">Boxy Fit</span></div>
+                    </div>
+                    <div class="care-box">
+                        <span>CARE INSTRUCTIONS:</span>
+                        • Wash inside out with cold water.<br>• Do not iron directly on the graphic.<br>• Hang dry only. Do not tumble dry.
+                    </div>
+                    <p style="font-size: 11px; margin-bottom: 10px;">
+                        <span onclick="document.getElementById('sizeModal').style.display='flex'" style="text-decoration: underline; cursor: pointer; color: #ff2e63;">View Size Guide</span>
+                        <span style="opacity:0.3; margin:0 5px;">|</span>
+                        <a id="size-wa-link" href="#" target="_blank" style="color: #ff2e63; font-weight: 800; text-decoration: none;">Bingung pilih ukuran? Tanya Admin</a>
+                    </p>
                     <select class="select" id="size1">
-                        <option value="S">S - Small</option>
-                        <option value="M">M - Medium</option>
-                        <option value="L">L - Large</option>
+                        <option value="" disabled selected>SELECT SIZE</option>
+                        <option value="S">SIZE S</option>
+                        <option value="M">SIZE M</option>
+                        <option value="L">SIZE L</option>
+                        <option value="XL">SIZE XL</option>
                     </select>
-                    <select class="select" id="color1">
-                        <option value="Black">Color: Black</option>
-                        <option value="White">Color: White</option>
-                    </select>
-                    <button id="add-btn" class="btn" style="width:100%; margin-top: 15px;" onclick="addCart('LVN Graphic Tee Black Pink','size1','color1')">Add to Bag</button>
+                    <button class="btn" id="buy-btn" style="width:100%; margin-top:10px;" onclick="addCart('LVN Graphic Tee','size1', 135000)">Add To Bag</button>
+                    <p id="closed-msg" style="display:none; font-size:10px; text-align:center; margin-top:10px; opacity:0.5; color:#ff2e63; font-weight:800;">STORE CLOSED. RE-OPENS AT 07:00 AM.</p>
+                    <div class="shipping-info">📦 Est. Shipping: 3–7 Working Days.<br>🔄 7-Day Easy Return Policy.<br>💳 Secure Payment via WhatsApp.</div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <section id="contact">
-        <h2 class="section-title">PULL UP</h2>
-        <div class="glass-card fade-up" style="max-width: 1000px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 50px; align-items: start;">
-            
-            <div style="text-align: left; border-left: 2px solid #ff2e63; padding-left: 30px;">
-                <h3 style="font-size: 28px; font-weight: 800; margin-bottom: 20px; letter-spacing: -1px;">CONNECT WITH <br><span style="color: #ff2e63;">THE CREW</span></h3>
-                
-                <div style="margin-bottom: 40px; font-size: 13px; opacity: 0.7; line-height: 1.8; letter-spacing: 1px;">
-                    <p style="margin-bottom: 15px;">Ada pertanyaan seputar drop terbaru atau kerjasama brand? Hit us up via form atau direct contact di bawah.</p>
-                    
-                    <div style="margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                        <p style="font-weight: 800; color: #ff2e63; margin-bottom: 5px;">INSTAGRAM</p>
-                        <p style="margin-bottom: 15px;">@official_lvnworld</p>
-                        
-                        <p style="font-weight: 800; color: #ff2e63; margin-bottom: 5px;">OPERATIONAL</p>
-                        <p>MON — SAT / 10:00 — 22:00</p>
+            <div class="product sold-out reveal">
+                <div class="img-container">
+                    <div class="sold-out-badge">Coming Soon</div>
+                    <img src="" class="parallax-img" alt="Drop 02 Preview">
+                </div>
+                <div class="product-info">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h2 style="font-size: 18px; letter-spacing: 2px; opacity: 0.5;">LVN WORK JACKET</h2>
+                        <span style="font-size: 10px; background:#444; padding:4px 8px; font-weight:800; color:#aaa;">DROP 02</span>
                     </div>
+                    <div style="margin-bottom: 20px;">
+                        <span style="font-size: 20px; font-weight: 800; opacity: 0.4;">COMING SOON</span>
+                    </div>
+                    <div class="care-box" style="border-color: #222; text-align: center;">
+                        <span>NEXT DROP LOCKSTAGE:</span>
+                        Stay tuned on our Instagram & TikTok circles for early access codes.
+                    </div>
+                    <button class="btn" disabled style="width:100%; background: #222; border-color: #222; color: #555;">OUT OF STOCK</button>
                 </div>
-
-                <p style="font-size: 9px; opacity: 0.3; letter-spacing: 3px;">LOC: Kota Tasikmalaya // Jawabarat // Indonesia</p>
             </div>
 
-            <div class="contact-form">
-                <input id="nama" placeholder="YOUR NAME" type="text" style="text-transform: uppercase; font-weight: 600;">
-                <input id="email" placeholder="EMAIL / INSTAGRAM ID" type="text" style="text-transform: uppercase; font-weight: 600;">
-                <textarea id="pesan" placeholder="WHAT'S ON YOUR MIND?" style="height: 150px; resize: none; text-transform: uppercase; font-weight: 600;"></textarea>
-                <button class="btn" style="width:100%; margin-top: 10px; font-size: 14px;" onclick="kirimContact()">DROP TO WHATSAPP</button>
+        </div>
+
+        <div class="reveal" style="margin-top: 100px;">
+            <h3 style="text-align: center; letter-spacing: 10px; font-size: 14px; opacity: 0.5;">LOOKBOOK 01</h3>
+            <div class="lookbook-grid">
+                <div class="lookbook-item"><img src="1778855149527.jpg" alt="LVN Look 1"></div>
+                <div class="lookbook-item"><img src="1778855149231.jpg" alt="LVN Look 2"></div>
+                <div class="lookbook-item"><img src="1778855148745.jpg" alt="LVN Look 3"></div>
             </div>
+        </div>
+
+        <div class="reveal community-section" style="margin-top: 120px;">
+    <div class="community-container">
+        <h3>THE MIDNIGHT CIRCLE</h3>
+        <p>Beneath the dim city lights, we don’t just wear garments—we build a movement. LVN WORLD is a communal space for those who refuse to conform to the daylight routine. Step into our inner circle to secure early drops, gain access to secret archives, and connect directly with fellow midnight wanderers.</p>
+        <a href="https://chat.whatsapp.com/Iy1ocf2HAN4DTvSueVojBx" target="_blank" style="text-decoration: none;">
+            <button class="btn btn-community">ENTER THE VAULT</button>
+        </a>
+    </div>
+</div>
         </div>
     </section>
 
-    <div id="sizeModal" class="modal">
-        <div class="modal-content">
-            <h3 style="letter-spacing: 2px; color: #ff2e63;">SIZE CHART (CM)</h3>
-            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-                <tr><th style="border: 1px solid #222; padding: 10px;">Size</th><th style="border: 1px solid #222; padding: 10px;">Width</th><th style="border: 1px solid #222; padding: 10px;">Length</th></tr>
-                <tr><td style="border: 1px solid #222; padding: 10px;">S</td><td>48</td><td>68</td></tr>
-                <tr><td style="border: 1px solid #222; padding: 10px;">M</td><td>51</td><td>71</td></tr>
-                <tr><td style="border: 1px solid #222; padding: 10px;">L</td><td>54</td><td>74</td></tr>
-                <tr><td style="border: 1px solid #222; padding: 10px;">XL</td><td>57</td><td>77</td></tr>
-            </table>
-            <button class="btn" style="width: 100%;" onclick="toggleModal()">CLOSE</button>
-        </div>
+    <div class="audio-player-container">
+        <button class="audio-btn" onclick="toggleAudio()">
+            <span id="audio-status-icon">▶</span> <span style="font-size: 9px;" id="audio-text-status">PLAY ATMOSPHERE</span>
+            <div class="audio-waves" id="audio-waves">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
+        </button>
     </div>
+    <audio id="bg-audio" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
     <div class="cart" id="cart">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <h2 style="letter-spacing: 2px; font-weight: 800;">MY BAG</h2>
-            <span onclick="toggleCart()" style="cursor: pointer; font-size: 28px; opacity: 0.5;">✕</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+            <h2 style="letter-spacing:3px;">BAG</h2>
+            <span onclick="toggleCart()" style="cursor:pointer; font-size: 12px; opacity: 0.5;">CLOSE</span>
         </div>
         <div id="cartItems"></div>
+        <div id="checkoutForm" style="display:none; margin-top: 20px; border-top: 1px solid #222; padding-top: 20px;">
+            <input type="text" id="buyerName" class="input-field" placeholder="Full Name">
+            <textarea id="buyerAddress" class="input-field" placeholder="Full Shipping Address" style="height: 80px;"></textarea>
+            <select class="select" id="paymentMethod" onchange="checkPaymentMethod()">
+                <option value="" disabled selected>CHOOSE PAYMENT</option>
+                <option value="BCA">TRANSFER BCA</option>
+                <option value="MANDIRI">TRANSFER MANDIRI</option>
+                <option value="DANA">DANA</option>
+                <option value="GOPAY">GOPAY</option>
+            </select>
+            <div id="rekening-container"></div>
+        </div>
+        <div id="cartTotal"></div>
     </div>
 
-    <div class="cart-btn" onclick="toggleCart()">🛒</div>
-    <a id="floating-wa" class="whatsapp" href="#" target="_blank">💬</a>
+    <div class="floating-icon" style="bottom:90px; background:#ff2e63;" onclick="toggleCart()">
+        🛒 <div id="cart-count" style="position:absolute; top:0; right:0; background:white; color:black; width:20px; height:20px; border-radius:50%; font-size:10px; display:none; justify-content:center; align-items:center; font-weight:800;">0</div>
+    </div>
+    <a id="wa-link" class="floating-icon" style="bottom:20px; background:#25D366;" href="#" target="_blank">💬</a>
 
-    <footer>© 2026 LVN WORLD OFFICIAL. <br>STREETWEAR IDENTITY.</footer>
+    <div id="sizeModal">
+        <div class="modal-content">
+            <h3 style="letter-spacing: 3px; margin-bottom: 20px;">SIZE CHART (CM)</h3>
+            <table>
+                <thead>
+                    <tr><th>SIZE</th><th>LENGTH</th><th>WIDTH</th><th>SLEEVE</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>S</td><td>59</td><td>50</td><td>38</td></tr>
+                    <tr><td>M</td><td>61</td><td>52</td><td>39</td></tr>
+                    <tr><td>L</td><td>64</td><td>54</td><td>40</td></tr>
+                    <tr><td>XL</td><td>66</td><td>56</td><td>41</td></tr>
+                </tbody>
+            </table>
+            <button class="btn" style="width:100%;" onclick="document.getElementById('sizeModal').style.display='none'">CLOSE</button>
+        </div>
+    </div>
 
     <script>
-        let cart = [];
-        const stockAmount = 12; 
-        const productStatus = 'available'; 
-        const daftarNomor = ["6287737687886", "6287765656712"];
+        const adminList = [{ name: "Admin 1", phone: "6287737687886" }, { name: "Admin 2", phone: "6287765656712" }];
+        const REK_NUMBERS = { BCA: "8770535353", MANDIRI: "131001555555", DANA: "087737687886", GOPAY: "087737687886" };
+        const OPEN_HOUR = 7; const CLOSE_HOUR = 24; 
 
-        function pilihNomorWA() { return daftarNomor[Math.floor(Math.random() * daftarNomor.length)]; }
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        function applyCursorEffects() {
+            document.querySelectorAll('a, button, select, .lookbook-item, .copy-btn, th, td, span[onclick], .logo').forEach(element => {
+                element.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+                element.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+            });
+        }
+
+        /* SCROLL IMAGE PARALLAX ENGINE */
+        window.addEventListener('scroll', () => {
+            document.querySelectorAll('.img-container img').forEach(img => {
+                const rect = img.parentElement.getBoundingClientRect();
+                if(rect.top < window.innerHeight && rect.bottom > 0) {
+                    img.style.transform = `translateY(${rect.top * 0.04}px) scale(1.08)`;
+                }
+            });
+        });
+
+        /* AUDIO PLAYER ENGINE */
+        const audio = document.getElementById('bg-audio');
+        const waves = document.getElementById('audio-waves');
+        const audioIcon = document.getElementById('audio-status-icon');
+        const audioText = document.getElementById('audio-text-status');
+
+        function toggleAudio() {
+            if (audio.paused) {
+                audio.play().catch(e => console.log("Audio play blocked by browser config"));
+                waves.classList.add('playing');
+                audioIcon.textContent = "‖";
+                audioText.textContent = "MUTE AUDIO";
+            } else {
+                audio.pause();
+                waves.classList.remove('playing');
+                audioIcon.textContent = "▶";
+                audioText.textContent = "PLAY ATMOSPHERE";
+            }
+        }
+
+        function updateStoreStatus() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMin = now.getMinutes();
+            const currentSec = now.getSeconds();
+            
+            const timerEl = document.getElementById('timer');
+            const statusEl = document.getElementById('store-status');
+            const buyBtn = document.getElementById('buy-btn');
+            const closedMsg = document.getElementById('closed-msg');
+
+            const isOpen = currentHour >= OPEN_HOUR && currentHour < CLOSE_HOUR;
+
+            if (isOpen) {
+                statusEl.textContent = "STORE OPEN";
+                statusEl.style.color = "#25D366";
+                buyBtn.disabled = false;
+                closedMsg.style.display = "none";
+                
+                const hoursLeft = 23 - currentHour;
+                const minsLeft = 59 - currentMin;
+                const secsLeft = 59 - currentSec;
+                timerEl.textContent = `CLOSING IN: ${pad(hoursLeft)}:${pad(minsLeft)}:${pad(secsLeft)}`;
+            } else {
+                statusEl.textContent = "STORE CLOSED";
+                statusEl.style.color = "#ff2e63";
+                buyBtn.disabled = true;
+                closedMsg.style.display = "block";
+                
+                let hoursToOpen;
+                if (currentHour < OPEN_HOUR) {
+                    hoursToOpen = (OPEN_HOUR - 1) - currentHour;
+                } else {
+                    hoursToOpen = (OPEN_HOUR - 1) + (24 - currentHour);
+                }
+                const minsToOpen = 59 - currentMin;
+                const secsToOpen = 59 - currentSec;
+                timerEl.textContent = `RE-OPENS IN: ${pad(hoursToOpen)}:${pad(minsToOpen)}:${pad(secsToOpen)}`;
+            }
+        }
+
+        function pad(n) { return n.toString().padStart(2, '0'); }
+
+        function checkPaymentMethod() {
+            const method = document.getElementById('paymentMethod').value;
+            const container = document.getElementById('rekening-container');
+            if (REK_NUMBERS[method]) {
+                container.innerHTML = `
+                    <div class="copy-box">
+                        <span>${method}: <b>${REK_NUMBERS[method]}</b></span>
+                        <span class="copy-btn" onclick="copyToClipboard('${REK_NUMBERS[method]}')">SALIN</span>
+                    </div>`;
+                applyCursorEffects();
+            } else { container.innerHTML = ""; }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            alert("Nomor rekening/e-wallet berhasil disalin!");
+        }
+
+        setInterval(() => {
+            const el = document.getElementById('viewing-count');
+            if(el) {
+                const current = parseInt(el.innerText);
+                const change = Math.floor(Math.random() * 5) - 2;
+                let newVal = current + change;
+                if(newVal < 5) newVal = 8;
+                if(newVal > 25) newVal = 20;
+                el.innerText = newVal;
+            }
+        }, 4000);
+
+        setInterval(updateStoreStatus, 1000);
 
         window.onload = () => {
-            const productEl = document.getElementById('main-product');
-            const addBtn = document.getElementById('add-btn');
-            const stockTag = document.getElementById('stock-tag');
+            updateStoreStatus();
+            const randomAdmin = adminList[Math.floor(Math.random() * adminList.length)];
+            
+            document.getElementById('wa-link').href = `https://wa.me/${randomAdmin.phone}?text=Hello%20LVN%20WORLD...`;
+            document.getElementById('size-wa-link').href = `https://wa.me/${randomAdmin.phone}?text=Halo%20Admin%2C%20tinggi%20saya...%20berat%20saya...%20cocok%20pakai%20size%20apa%20ya%20untuk%20LVN%20Graphic%20Tee%3F`;
 
-            stockTag.innerText = `${stockAmount} PCS LEFT`;
-            if (stockAmount <= 5 && stockAmount > 0) stockTag.classList.add('low-stock');
-
-            if (productStatus === 'soldout' || stockAmount <= 0) {
-                productEl.classList.add('is-soldout');
-                addBtn.disabled = true;
-                addBtn.innerText = "OUT OF STOCK";
-                stockTag.innerText = "SOLD OUT";
-                stockTag.style.background = "#ff2e63";
-            }
-
-            document.getElementById('floating-wa').href = `https://wa.me/${pilihNomorWA()}`;
-
-            setTimeout(() => {
-                document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('loader').style.display = 'none';
-                    document.querySelectorAll('.hero .fade-up').forEach(el => el.classList.add('visible'));
-                }, 500);
-            }, 1500);
-
+            setTimeout(() => { 
+                const loader = document.getElementById('loader');
+                loader.style.transition = 'opacity 0.6s ease';
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 600);
+            }, 1200);
+            
             const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, { threshold: 0.1 });
+                entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
+            });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-            document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+            applyCursorEffects();
         }
 
+        let cart = [];
         function toggleCart() { document.getElementById('cart').classList.toggle('active'); }
-        function toggleModal() { 
-            const m = document.getElementById('sizeModal');
-            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        function addCart(nama, sizeId, colorId) {
+        function addCart(nama, sizeId, harga) {
             let size = document.getElementById(sizeId).value;
-            let color = document.getElementById(colorId).value;
-            cart.push({ nama, size, color });
+            if(!size) return alert("Please select a size!");
+            cart.push({ nama, size, harga });
             render();
             document.getElementById('cart').classList.add('active');
         }
-
+        function removeItem(i) { cart.splice(i, 1); render(); }
+        
         function render() {
             let el = document.getElementById('cartItems');
-            el.innerHTML = cart.length === 0 ? "<p style='opacity:0.3; text-align:center; margin-top:100px; font-size:13px;'>Your bag is empty.</p>" : "";
-            
-            cart.forEach((item, index) => {
-                el.innerHTML += `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:#111; padding:20px; border-radius:18px; border: 1px solid #222;">
-                    <div>
-                        <strong style="display:block; font-size:13px;">${item.nama}</strong>
-                        <small style="color:#ff2e63; font-weight:800; text-transform: uppercase; font-size:10px;">${item.size} / ${item.color}</small>
-                    </div>
-                    <button onclick='removeItem(${index})' style='background:none; color:rgba(255,255,255,0.2); border:none; font-size:18px; cursor:pointer;'>✕</button>
-                </div>`;
-            });
-
-            if(cart.length > 0) {
-                el.innerHTML += `
-                <div style="margin-top: 30px; border-top: 1px solid #222; padding-top: 20px;">
-                    <label style="font-size: 10px; font-weight: 800; letter-spacing: 1px; color: #666; margin-bottom: 8px; display: block;">SELECT ADMIN</label>
-                    <select class="select" id="pilihAdminCheckout" style="margin-bottom: 15px;">
-                        <option value="0">ADMIN 1 (FAST RESPOND)</option>
-                        <option value="1">ADMIN 2 (ORDER HELPER)</option>
-                    </select>
-                    <button class="btn" style="width:100%;" onclick="kirimKeAdmin()">CHECKOUT VIA WA</button>
-                </div>`;
+            let totalEl = document.getElementById('cartTotal');
+            let form = document.getElementById('checkoutForm');
+            let badge = document.getElementById('cart-count');
+            let total = 0;
+            el.innerHTML = "";
+            badge.innerText = cart.length;
+            badge.style.display = cart.length > 0 ? "flex" : "none";
+            if (cart.length === 0) {
+                el.innerHTML = "<p style='opacity:0.2; text-align:center; padding-top:50px;'>EMPTY BAG</p>";
+                totalEl.innerHTML = "";
+                form.style.display = "none";
+                return;
             }
+            form.style.display = "block";
+            cart.forEach((item, i) => {
+                total += item.harga;
+                el.innerHTML += `<div style="background:#111; padding:20px; margin-bottom:10px; border:1px solid #222;"><div style="display:flex; justify-content:space-between;"><span style="font-size:12px; font-weight:800; letter-spacing:1px;">${item.nama}</span><span onclick="removeItem(${i})" style="color:#ff2e63; cursor:pointer;">✕</span></div><div style="font-size:11px; opacity:0.6; margin-top:5px;">SIZE: ${item.size}</div></div>`;
+            });
+            totalEl.innerHTML = `<div style="margin-top:30px; border-top:1px solid #222; padding-top:20px;"><div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:800;"><span>TOTAL</span><span>IDR ${total.toLocaleString()}</span></div><div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;"><button class="btn" onclick="checkoutWA(0)">ADMIN 1</button><button class="btn" style="background:#333;" onclick="checkoutWA(1)">ADMIN 2</button></div></div>`;
+            applyCursorEffects();
         }
 
-        function removeItem(index) { cart.splice(index, 1); render(); }
-
-        function kirimKeAdmin() {
-            let adminIndex = document.getElementById('pilihAdminCheckout').value;
-            let nomorTujuan = daftarNomor[adminIndex];
-            
-            let daftar = cart.map((item, i) => 
-                `${i+1}. ${item.nama} (${item.size} - ${item.color}) - *Rp 149.999*`
-            ).join('%0A');
-            
-            let text = `Halo LVN WORLD, saya mau order produk SALE:%0A%0A${daftar}%0A%0A*Total Order:* ${cart.length} Item`;
-            
-            window.open(`https://wa.me/${nomorTujuan}?text=${text}`, '_blank');
-        }
-
-        function kirimContact() {
-            let nama = document.getElementById('nama').value;
-            let email = document.getElementById('email').value;
-            let pesan = document.getElementById('pesan').value;
-            if(!nama || !pesan) return alert("Mohon isi nama dan pesan.");
-            
-            let text = `*CONTACT FROM WEBSITE*%0A--------------------------%0A*Nama:* ${nama}%0A*Email:* ${email || '-'}%0A*Pesan:* ${pesan}`;
-            window.open(`https://wa.me/${pilihNomorWA()}?text=${text}`, '_blank');
+        function checkoutWA(index) {
+            const name = document.getElementById('buyerName').value;
+            const address = document.getElementById('buyerAddress').value;
+            const payment = document.getElementById('paymentMethod').value;
+            if(!name || !address || !payment) return alert("Please fill all details!");
+            let list = cart.map((item, i) => `${i+1}. ${item.nama} (${item.size})`).join('%0A');
+            let totalValue = cart.reduce((a, b) => a + b.harga, 0);
+            let text = `Hello LVN WORLD,%0A%0AI would like to order:%0A${list}%0A%0A*Name:* ${name}%0A*Address:* ${address}%0A*Payment:* ${payment}%0A%0A*Total:* IDR ${totalValue.toLocaleString()}`;
+            window.open(`https://wa.me/${adminList[index].phone}?text=${text}`, '_blank');
         }
     </script>
 </body>
