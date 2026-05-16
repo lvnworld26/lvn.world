@@ -200,8 +200,8 @@
 
     <div class="top-banner">
         <div class="marquee-text">
-            <span>LVN WORLD — DROP 01: MIDNIGHT WANDERERS AVAILABLE NOW • FREE STICKER PACK FOR EVERY ORDER • </span>
-            <span>LVN WORLD — DROP 01: MIDNIGHT WANDERERS AVAILABLE NOW • FREE STICKER PACK FOR EVERY ORDER • </span>
+            <span>✦ LVN WORLD DROP 01: MIDNIGHT WANDERERS IS LIVE ✦ HIGHLY LIMITED STOCK ✦ COMPLIMENTARY STICKER PACK INCLUDED ✦ </span>
+            <span>✦ LVN WORLD DROP 01: MIDNIGHT WANDERERS IS LIVE ✦ HIGHLY LIMITED STOCK ✦ COMPLIMENTARY STICKER PACK INCLUDED ✦ </span>
         </div>
     </div>
 
@@ -252,7 +252,7 @@
             
             <div class="product reveal">
                 <div class="img-container">
-                    <img src="product-tee.jpeg" class="parallax-img" alt="Graphic Tee">
+                    <img src="WhatsApp Image 2026-05-16 at 08.35.13.jpeg" class="parallax-img" alt="Graphic Tee">
                 </div>
                 <div class="product-info">
                     <div class="inventory-counter">🔥 <span id="viewing-count">12</span> PEOPLE ARE VIEWING THIS ITEM</div>
@@ -355,14 +355,19 @@
         <div id="checkoutForm" style="display:none; margin-top: 20px; border-top: 1px solid #222; padding-top: 20px;">
             <input type="text" id="buyerName" class="input-field" placeholder="Full Name">
             <textarea id="buyerAddress" class="input-field" placeholder="Full Shipping Address" style="height: 80px;"></textarea>
+            
             <select class="select" id="paymentMethod" onchange="checkPaymentMethod()">
                 <option value="" disabled selected>CHOOSE PAYMENT</option>
-                <option value="BCA">TRANSFER BCA</option>
-                <option value="MANDIRI">TRANSFER MANDIRI</option>
                 <option value="DANA">DANA</option>
                 <option value="GOPAY">GOPAY</option>
             </select>
             <div id="rekening-container"></div>
+            
+            <!-- TAMBAHAN PILIHAN ADMIN -->
+            <select class="select" id="adminSelect">
+                <option value="0" selected>KIRIM KE ADMIN 1</option>
+                <option value="1">KIRIM KE ADMIN 2 (Jika Admin 1 Slow Respon)</option>
+            </select>
         </div>
         <div id="cartTotal"></div>
     </div>
@@ -370,7 +375,21 @@
     <div class="floating-icon" style="bottom:90px; background:#ff2e63;" onclick="toggleCart()">
         🛒 <div id="cart-count" style="position:absolute; top:0; right:0; background:white; color:black; width:20px; height:20px; border-radius:50%; font-size:10px; display:none; justify-content:center; align-items:center; font-weight:800;">0</div>
     </div>
-    <a id="wa-link" class="floating-icon" style="bottom:20px; background:#25D366;" href="#" target="_blank">💬</a>
+    
+    <!-- LINK LAMA DISEMBUNYIKAN AGAR SCRIPT TIDAK ERROR KARENA DIHAPUS -->
+    <a id="wa-link" style="display:none;"></a>
+    
+    <!-- MENU POP-UP WHATSAPP BARU -->
+    <div id="wa-menu" style="display:none; position:fixed; bottom:90px; right:20px; background:#111; border:1px solid #333; padding:15px; border-radius:8px; z-index:1500; box-shadow: 0 0 15px rgba(0,0,0,0.8);">
+        <p style="font-size:10px; color:#aaa; margin-bottom:10px; text-align:center; font-weight: 800; letter-spacing: 1px;">HUBUNGI ADMIN</p>
+        <a href="https://wa.me/6287737687886?text=Hello%20LVN%20WORLD..." target="_blank" style="display:block; background:#25D366; color:#000; text-decoration:none; font-size:11px; font-weight:800; padding:10px; text-align:center; margin-bottom:8px; border-radius:4px;">💬 ADMIN 1</a>
+        <a href="https://wa.me/6287765656712?text=Hello%20LVN%20WORLD..." target="_blank" style="display:block; background:#222; border:1px solid #25D366; color:#25D366; text-decoration:none; font-size:10px; font-weight:800; padding:10px; text-align:center; border-radius:4px;">💬 ADMIN 2 (Slow Respon?)</a>
+    </div>
+    
+    <!-- TOMBOL TRIGGER WHATSAPP BARU -->
+    <div class="floating-icon" style="bottom:20px; background:#25D366;" onclick="document.getElementById('wa-menu').style.display = document.getElementById('wa-menu').style.display === 'block' ? 'none' : 'block'">
+        💬
+    </div>
 
     <div id="sizeModal">
         <div class="modal-content">
@@ -391,9 +410,9 @@
     </div>
 
     <script>
-        const adminList = [{ name: "Admin 1", phone: "6287737687886" }, { name: "Admin 2", phone: "6287765656712" }];
-        const REK_NUMBERS = { BCA: "8770535353", MANDIRI: "131001555555", DANA: "087737687886", GOPAY: "087737687886" };
-        const OPEN_HOUR = 7; const CLOSE_HOUR = 24; 
+       const adminList = [{ name: "Admin 1", phone: "6287737687886" }, { name: "Admin 2", phone: "6287765656712" }];
+       const REK_NUMBERS = { DANA: "087765656712", GOPAY: "087737687886" };
+       const OPEN_HOUR = 7; const CLOSE_HOUR = 24;
 
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', e => {
@@ -517,6 +536,7 @@
             updateStoreStatus();
             const randomAdmin = adminList[Math.floor(Math.random() * adminList.length)];
             
+            // KODE ASLI TETAP ADA AGAR TIDAK ERROR
             document.getElementById('wa-link').href = `https://wa.me/${randomAdmin.phone}?text=Hello%20LVN%20WORLD...`;
             document.getElementById('size-wa-link').href = `https://wa.me/${randomAdmin.phone}?text=Halo%20Admin%2C%20tinggi%20saya...%20berat%20saya...%20cocok%20pakai%20size%20apa%20ya%20untuk%20LVN%20Graphic%20Tee%3F`;
 
@@ -588,14 +608,20 @@
             const name = document.getElementById('buyerName').value;
             const address = document.getElementById('buyerAddress').value;
             const payment = document.getElementById('paymentMethod').value;
+            
+            // Mengambil admin mana yang dipilih pembeli di keranjang
+            const adminIndex = document.getElementById('adminSelect').value;
+
             if(!name || !address || !payment) return alert("Please complete all checkout fields!");
             
             let itemText = "";
             cart.forEach(item => { itemText += `- ${item.nama} (${item.size})\n`; });
             
             const text = `Halo LVN WORLD, saya ingin memesan:\n\n${itemText}\nTotal: IDR ${total.toLocaleString()}\n\nNama: ${name}\nAlamat: ${address}\nPembayaran: ${payment}`;
-            const randomAdmin = adminList[Math.floor(Math.random() * adminList.length)];
-            window.open(`https://wa.me/${randomAdmin.phone}?text=${encodeURIComponent(text)}`, '_blank');
+            
+            // Format order akan dikirim ke nomor Admin yang dipilih
+            const selectedAdmin = adminList[adminIndex];
+            window.open(`https://wa.me/${selectedAdmin.phone}?text=${encodeURIComponent(text)}`, '_blank');
         }
     </script>
 </body>
