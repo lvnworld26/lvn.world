@@ -40,9 +40,10 @@
         }
         @media (max-width: 768px) { header { top: 31px; } }
         
-        /* LOGO GLITCH EFFECT */
-        .logo { font-weight:800; font-size:22px; letter-spacing: 4px; color: #ff2e63; position: relative; transition: 0.3s; }
-        .logo:hover { animation: glitch 0.3s linear infinite; color: #fff; text-shadow: 2px 0 #ff2e63, -2px 0 #00f3ff; }
+        /* LOGO STYLING WITH GLITCH EFFECT */
+        .logo { display: flex; align-items: center; position: relative; transition: 0.3s; }
+        .logo img { height: 32px; width: auto; object-fit: contain; }
+        .logo:hover { animation: glitch 0.3s linear infinite; }
         
         @keyframes glitch {
             0% { transform: translate(0) }
@@ -196,7 +197,9 @@
     <div id="loader"><div class="loader-logo">LVN WORLD</div></div>
 
     <header>
-        <div class="logo">LVN</div>
+        <div class="logo">
+            <img src="WhatsApp Image 2026-05-16 at 10.07.28.jpeg" alt="LVN WORLD Logo">
+        </div>
         <div class="header-meta">
             <a href="https://instagram.com/official_lvnworld" class="header-social-link" target="_blank">IG</a>
             <div style="width: 1px; height: 10px; background: rgba(255,255,255,0.2);"></div>
@@ -302,21 +305,20 @@
         <div class="reveal" style="margin-top: 100px;">
             <h3 style="text-align: center; letter-spacing: 10px; font-size: 14px; opacity: 0.5;">LOOKBOOK 01</h3>
             <div class="lookbook-grid">
-                <div class="lookbook-item"><img src="1778855149527.jpg" alt="LVN Look 1"></div>
+                <div class="lookbook-item"><img src="1778855149634.jpg" alt="LVN Look 1"></div>
                 <div class="lookbook-item"><img src="1778855149231.jpg" alt="LVN Look 2"></div>
                 <div class="lookbook-item"><img src="1778855148745.jpg" alt="LVN Look 3"></div>
             </div>
         </div>
 
         <div class="reveal community-section" style="margin-top: 120px;">
-    <div class="community-container">
-        <h3>THE MIDNIGHT CIRCLE</h3>
-        <p>Beneath the dim city lights, we don’t just wear garments—we build a movement. LVN WORLD is a communal space for those who refuse to conform to the daylight routine. Step into our inner circle to secure early drops, gain access to secret archives, and connect directly with fellow midnight wanderers.</p>
-        <a href="https://chat.whatsapp.com/Iy1ocf2HAN4DTvSueVojBx" target="_blank" style="text-decoration: none;">
-            <button class="btn btn-community">ENTER THE VAULT</button>
-        </a>
-    </div>
-</div>
+            <div class="community-container">
+                <h3>THE MIDNIGHT CIRCLE</h3>
+                <p>Beneath the dim city lights, we don’t just wear garments—we build a movement. LVN WORLD is a communal space for those who refuse to conform to the daylight routine. Step into our inner circle to secure early drops, gain access to secret archives, and connect directly with fellow midnight wanderers.</p>
+                <a href="https://chat.whatsapp.com/Iy1ocf2HAN4DTvSueVojBx" target="_blank" style="text-decoration: none;">
+                    <button class="btn btn-community">ENTER THE VAULT</button>
+                </a>
+            </div>
         </div>
     </section>
 
@@ -493,6 +495,7 @@
                 let newVal = current + change;
                 if(newVal < 5) newVal = 8;
                 if(newVal > 25) newVal = 20;
+                if(newVal > 25) newVal = 20;
                 el.innerText = newVal;
             }
         }, 4000);
@@ -550,21 +553,38 @@
             form.style.display = "block";
             cart.forEach((item, i) => {
                 total += item.harga;
-                el.innerHTML += `<div style="background:#111; padding:20px; margin-bottom:10px; border:1px solid #222;"><div style="display:flex; justify-content:space-between;"><span style="font-size:12px; font-weight:800; letter-spacing:1px;">${item.nama}</span><span onclick="removeItem(${i})" style="color:#ff2e63; cursor:pointer;">✕</span></div><div style="font-size:11px; opacity:0.6; margin-top:5px;">SIZE: ${item.size}</div></div>`;
+                el.innerHTML += `
+                    <div style="background:#111; padding:20px; margin-bottom:10px; border:1px solid #222;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="font-size:12px; font-weight:800; letter-spacing:1px;">${item.nama} (${item.size})</span>
+                            <span onclick="removeItem(${i})" style="color:#ff2e63; cursor:pointer; font-size:10px; font-weight:800;">REMOVE</span>
+                        </div>
+                        <div style="margin-top:10px; font-size:14px; font-weight:800; color:#ff2e63;">IDR ${item.harga.toLocaleString()}</div>
+                    </div>`;
             });
-            totalEl.innerHTML = `<div style="margin-top:30px; border-top:1px solid #222; padding-top:20px;"><div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:800;"><span>TOTAL</span><span>IDR ${total.toLocaleString()}</span></div><div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;"><button class="btn" onclick="checkoutWA(0)">ADMIN 1</button><button class="btn" style="background:#333;" onclick="checkoutWA(1)">ADMIN 2</button></div></div>`;
+            
+            totalEl.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-top:30px; border-top:1px solid #222; padding-top:20px; font-weight:800; letter-spacing:1px; font-size:14px;">
+                    <span>TOTAL</span>
+                    <span style="color:#ff2e63;">IDR ${total.toLocaleString()}</span>
+                </div>
+                <button class="btn" style="width:100%; margin-top:20px;" onclick="checkoutWhatsApp(${total})">CHECKOUT VIA WHATSAPP</button>`;
             applyCursorEffects();
         }
 
-        function checkoutWA(index) {
+        function checkoutWhatsApp(total) {
             const name = document.getElementById('buyerName').value;
             const address = document.getElementById('buyerAddress').value;
             const payment = document.getElementById('paymentMethod').value;
-            if(!name || !address || !payment) return alert("Please fill all details!");
-            let list = cart.map((item, i) => `${i+1}. ${item.nama} (${item.size})`).join('%0A');
-            let totalValue = cart.reduce((a, b) => a + b.harga, 0);
-            let text = `Hello LVN WORLD,%0A%0AI would like to order:%0A${list}%0A%0A*Name:* ${name}%0A*Address:* ${address}%0A*Payment:* ${payment}%0A%0A*Total:* IDR ${totalValue.toLocaleString()}`;
-            window.open(`https://wa.me/${adminList[index].phone}?text=${text}`, '_blank');
+            
+            if(!name || !address || !payment) return alert("Please fill in your name, address, and choose a payment method!");
+            
+            let itemDetails = cart.map(item => `- ${item.nama} (Size ${item.size})`).join('%0A');
+            const randomAdmin = adminList[Math.floor(Math.random() * adminList.length)];
+            
+            let text = `Halo%20LVN%20WORLD%2C%20saya%20ingin%20order%3A%0A%0A${itemDetails}%0A%0A*Data%20Pengiriman*%3A%0A- Nama%3A%20${encodeURIComponent(name)}%0A- Alamat%3A%20${encodeURIComponent(address)}%0A- Pembayaran%3A%20${payment}%0A%0A*Total%20Item*%3A%20IDR%20${total.toLocaleString()}%0A*(Belum%20termasuk%20ongkir)*`;
+            
+            window.open(`https://wa.me/${randomAdmin.phone}?text=${text}`, '_blank');
         }
     </script>
 </body>
