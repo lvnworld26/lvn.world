@@ -182,6 +182,18 @@
         .wave-bar:nth-child(2) { animation-delay: 0.15s; }
         .wave-bar:nth-child(3) { animation-delay: 0.3s; }
         @keyframes bounce { 0% { height: 3px; } 100% { height: 12px; } }
+
+        /* TUNING JARAK DETAIL PRODUK AGAR LEBIH MERAPAT & PADAT (MOBILE RESPONSIVE) */
+        .product-info h2 { margin-bottom: 2px !important; }
+        .product-info > div:nth-child(3) { margin-bottom: 12px !important; }
+        .tech-specs { margin: 12px 0 !important; padding-top: 12px !important; }
+        .spec-item { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .spec-icon { margin-bottom: 2px !important; }
+        .care-box { margin: 12px 0 !important; padding: 12px !important; }
+        .product-info p { margin-bottom: 6px !important; }
+        .select { margin: 4px 0 8px 0 !important; padding: 12px !important; }
+        #buy-btn { margin-top: 0 !important; }
+        .shipping-info { margin-top: 15px !important; padding-top: 10px !important; }
     </style>
 </head>
 <body>
@@ -253,7 +265,7 @@
                         <span style="font-size: 24px; font-weight: 800; color: #ff2e63;">IDR 135.000</span>
                     </div>
                     <div class="tech-specs">
-                        <div class="spec-item"><span class="spec-icon">⚖️</span><span class="spec-text">heavyweight Cotton Combed 20s</span></div>
+                        <div class="spec-item"><span class="spec-icon">⚖️</span><span class="spec-text">heavyweight 20s</span></div>
                         <div class="spec-item"><span class="spec-icon">🛡️</span><span class="spec-text">Plastisol</span></div>
                         <div class="spec-item"><span class="spec-icon">👕</span><span class="spec-text">Boxy Fit</span></div>
                     </div>
@@ -495,7 +507,6 @@
                 let newVal = current + change;
                 if(newVal < 5) newVal = 8;
                 if(newVal > 25) newVal = 20;
-                if(newVal > 25) newVal = 20;
                 el.innerText = newVal;
             }
         }, 4000);
@@ -554,37 +565,37 @@
             cart.forEach((item, i) => {
                 total += item.harga;
                 el.innerHTML += `
-                    <div style="background:#111; padding:20px; margin-bottom:10px; border:1px solid #222;">
-                        <div style="display:flex; justify-content:space-between;">
-                            <span style="font-size:12px; font-weight:800; letter-spacing:1px;">${item.nama} (${item.size})</span>
-                            <span onclick="removeItem(${i})" style="color:#ff2e63; cursor:pointer; font-size:10px; font-weight:800;">REMOVE</span>
+                    <div style="background:#111; padding:20px; margin-bottom:10px; border:1px solid #222; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <p style="font-size:12px; font-weight:800;">${item.nama}</p>
+                            <p style="font-size:10px; opacity:0.5; margin-top:4px;">SIZE: ${item.size}</p>
+                            <p style="font-size:11px; color:#ff2e63; font-weight:600; margin-top:4px;">IDR ${item.harga.toLocaleString()}</p>
                         </div>
-                        <div style="margin-top:10px; font-size:14px; font-weight:800; color:#ff2e63;">IDR ${item.harga.toLocaleString()}</div>
+                        <span onclick="removeItem(${i})" style="cursor:pointer; font-size:10px; color:#ff2e63; font-weight:800; text-decoration:underline;">REMOVE</span>
                     </div>`;
             });
             
             totalEl.innerHTML = `
-                <div style="display:flex; justify-content:space-between; margin-top:30px; border-top:1px solid #222; padding-top:20px; font-weight:800; letter-spacing:1px; font-size:14px;">
-                    <span>TOTAL</span>
-                    <span style="color:#ff2e63;">IDR ${total.toLocaleString()}</span>
+                <div style="margin-top:20px; padding-top:20px; border-top:1px solid #222; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; letter-spacing:2px;">TOTAL:</span>
+                    <span style="font-size:18px; font-weight:800; color:#ff2e63;">IDR ${total.toLocaleString()}</span>
                 </div>
-                <button class="btn" style="width:100%; margin-top:20px;" onclick="checkoutWhatsApp(${total})">CHECKOUT VIA WHATSAPP</button>`;
+                <button class="btn" style="width:100%; margin-top:20px;" onclick="checkoutWeb(${total})">CHECKOUT VIA WHATSAPP</button>`;
             applyCursorEffects();
         }
 
-        function checkoutWhatsApp(total) {
+        function checkoutWeb(total) {
             const name = document.getElementById('buyerName').value;
             const address = document.getElementById('buyerAddress').value;
             const payment = document.getElementById('paymentMethod').value;
+            if(!name || !address || !payment) return alert("Please complete all checkout fields!");
             
-            if(!name || !address || !payment) return alert("Please fill in your name, address, and choose a payment method!");
+            let itemText = "";
+            cart.forEach(item => { itemText += `- ${item.nama} (${item.size})\n`; });
             
-            let itemDetails = cart.map(item => `- ${item.nama} (Size ${item.size})`).join('%0A');
+            const text = `Halo LVN WORLD, saya ingin memesan:\n\n${itemText}\nTotal: IDR ${total.toLocaleString()}\n\nNama: ${name}\nAlamat: ${address}\nPembayaran: ${payment}`;
             const randomAdmin = adminList[Math.floor(Math.random() * adminList.length)];
-            
-            let text = `Halo%20LVN%20WORLD%2C%20saya%20ingin%20order%3A%0A%0A${itemDetails}%0A%0A*Data%20Pengiriman*%3A%0A- Nama%3A%20${encodeURIComponent(name)}%0A- Alamat%3A%20${encodeURIComponent(address)}%0A- Pembayaran%3A%20${payment}%0A%0A*Total%20Item*%3A%20IDR%20${total.toLocaleString()}%0A*(Belum%20termasuk%20ongkir)*`;
-            
-            window.open(`https://wa.me/${randomAdmin.phone}?text=${text}`, '_blank');
+            window.open(`https://wa.me/${randomAdmin.phone}?text=${encodeURIComponent(text)}`, '_blank');
         }
     </script>
 </body>
