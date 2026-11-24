@@ -169,8 +169,11 @@
             display: flex; justify-content: center; align-items: center;
             text-align: center;
             padding: 100px 5% 60px 5%;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)),
-                        url('https://images.unsplash.com/photo-1523910088395-dce29192d211?q=80&w=1920') center/cover no-repeat;
+            background:
+                radial-gradient(circle at 50% 35%, rgba(255, 46, 99, 0.16), transparent 55%),
+                linear-gradient(180deg, rgba(10, 10, 14, 0.65) 0%, rgba(5, 5, 5, 0.92) 100%),
+                url('ourstory.jpeg') center/cover no-repeat,
+                #070709;
         }
         .hero-title {
             font-size: clamp(32px, 8vw, 70px);
@@ -1245,7 +1248,7 @@
 
     <!-- Social Proof Popup -->
     <div class="social-proof" id="social-proof-popup">
-        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100" alt="Buyer" id="sp-img">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100" alt="Buyer" id="sp-img" onerror="this.src='logo.png'">
         <div class="social-proof-text">
             <span id="sp-name">Rizky dari Bandung</span><br>
             Baru saja membeli LVN Graphic Tee
@@ -1671,7 +1674,10 @@
             });
 
             const discountAmount = Math.round(subtotal * discount);
-            const shippingCost = parseInt(document.getElementById('shippingArea').value, 10) || 0;
+            const shippingSelect = document.getElementById('shippingArea');
+            const shippingCost = shippingSelect && !shippingSelect.options[shippingSelect.selectedIndex]?.disabled
+                ? (parseInt(shippingSelect.value, 10) || 0)
+                : 0;
             cartTotalAmount = Math.max(0, subtotal - discountAmount + shippingCost);
 
             let totalHTML = `
@@ -1793,7 +1799,8 @@ Mohon konfirmasi ketersediaan stok dan proses pembayarannya. Terima kasih.`;
                 alert("Silakan lengkapi Nama, No. WhatsApp, Alamat, dan Metode Pembayaran.");
                 return;
             }
-            if (payload.shippingValue === 0) {
+            const shipEl = document.getElementById('shippingArea');
+            if (!shipEl || shipEl.selectedIndex <= 0 || shipEl.options[shipEl.selectedIndex].disabled) {
                 alert("Silakan pilih area pengiriman terlebih dahulu.");
                 return;
             }
@@ -1880,6 +1887,20 @@ Mohon konfirmasi ketersediaan stok dan proses pembayarannya. Terima kasih.`;
                 runTerminalSequence();
             }
         }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+                toggleModal(false);
+                if (cartSidebar && cartSidebar.classList.contains('active')) toggleCart();
+                if (waMenu && waMenu.style.display === 'block') waMenu.style.display = 'none';
+                const termOverlay = document.getElementById('terminal-overlay');
+                if (termOverlay && termOverlay.style.display === 'flex') {
+                    termOverlay.style.display = 'none';
+                    document.getElementById('terminal-box').innerHTML = '';
+                }
+            }
+        });
 
         function closeTerminal(e) {
             if (e.target.id === 'terminal-overlay') {
